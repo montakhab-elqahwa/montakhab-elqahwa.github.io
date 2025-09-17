@@ -1,4 +1,14 @@
 
+---
+title: DFIR | CatReloaded CTF 2025
+published: 2025-08-24
+description: 'Digital Forensics and Incident Response challenges from CAT CTF 2025, including Index of Secrets, Loser, Dead Icons Speak, and Erased Traces.'
+image: 'CATF2025.jpg'
+tags: [Forensics]
+category: 'Cat-CTF 2025'
+draft: false 
+lang: 'en'
+---
 ![CATF2025](CATF2025.jpg)
 
 Hey folks,
