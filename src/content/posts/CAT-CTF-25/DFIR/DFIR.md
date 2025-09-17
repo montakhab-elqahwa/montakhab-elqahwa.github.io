@@ -9,7 +9,6 @@ category: 'Cat-CTF 2025'
 draft: false 
 lang: 'en'
 ---
-![CATF2025](CATF2025.jpg)
 
 Hey folks,
 
